@@ -21,9 +21,12 @@ cHash.update(password.encode('utf-8'))
 cHash.update(str(randomNumber).encode('utf-8'))
 print(cHash.hexdigest())
 
-s.verifyPassword(randomNumber, cHash.hexdigest())
+if (s.verifyPassword(randomNumber, cHash.hexdigest())):
+    s.adder_function(5,2)
+else:
+    print("Zusatzfunktion kann nicht ausgeführt werden!")
 
-s.adder_function(5,2)
+
 
 
 
