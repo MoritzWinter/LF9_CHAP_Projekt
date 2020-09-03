@@ -44,10 +44,11 @@ def verifyPassword(randomNumber, cHash):
     if (serverHash.hexdigest() == clientHash):
         isVerified = True
         print('Erfolgreich verbunden')
-
+        return True
     else:
         isVerified = False
         print('Verbindung ist fehlgeschlagen')
+        return False
 
 #Register verifyPassword
 server.register_function((verifyPassword), 'verifyPassword')
