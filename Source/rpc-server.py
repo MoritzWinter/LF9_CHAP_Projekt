@@ -15,33 +15,65 @@ server = SimpleXMLRPCServer(("localhost", 8000),
                             requestHandler=RequestHandler)
 server.register_introspection_functions()
 
+# Inizialize isVerified
+isVerified = False
+
 #randomNumber creates a random number between 1 and 9
-def randomNumber():
+def createRandomNumber():
     return random.randint(1,9)
 
-#Register randomNumber;
-server.register_function((randomNumber), 'randomNumber')
+#Register createRandomNumber; 
+server.register_function((createRandomNumber), 'createRandomNumber')
 
 
-#Inizialize passwort
-password = "1234"
+def verifyPassword(randomNumber, cHash):
+    global isVerified
+    randomNumberServer = 0
+    clientHash = ''
+    password = '1234'
 
-#Hash passwort and randomNumber
-hashedPasswordAndRandomNumber = hashlib.sha256()
-hashedPasswordAndRandomNumber.update(password.encode('utf-8'))
-hashedPasswordAndRandomNumber.update(str(randomNumber).encode('utf-8'))
-print(hashedPasswordAndRandomNumber.hexdigest())
+    randomNumberServer = randomNumber
+    print(randomNumberServer)
+    clientHash = cHash
+
+    #Hash Server passwort and randomNumber
+    serverHash = hashlib.sha256()
+    serverHash.update(password.encode('utf-8'))
+    serverHash.update(str(randomNumberServer).encode('utf-8'))
+    print(serverHash.hexdigest())
+    if (serverHash.hexdigest() == clientHash):
+        isVerified = True
+        print('Erfolgreich verbunden')
+
+    else:
+        isVerified = False
+        print('Verbindung ist fehlgeschlagen')
+
+#Register verifyPassword
+server.register_function((verifyPassword), 'verifyPassword')
+
+# Create Adder_function
+def adder_function(x,y):
+    if(isVerified):
+        print(x + y)
+        return x + y
+    else:
+        print("Password falsch")
+
+# Register adder_function
+server.register_function(adder_function, 'adder_function')
+
+
+# Run the server's main loop
+server.serve_forever()
 
 
 
-## Register pow() function; this will use the value of
-# pow.__name__ as the name, which is just 'pow'.
-# server.register_function(pow)
 
-## Register a function under a different name
-# def adder_function(x,y):
-#     return x + y
-# server.register_function(adder_function, 'add')
+
+
+
+
 
 ## Register an instance; all the methods of the instance are
 ## published as XML-RPC methods (in this case, just 'div').
@@ -50,6 +82,3 @@ print(hashedPasswordAndRandomNumber.hexdigest())
 #        return x // y
 
 # server.register_instance(MyFuncs())
-
-# Run the server's main loop
-server.serve_forever()
